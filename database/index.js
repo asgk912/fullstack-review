@@ -18,17 +18,30 @@ repoSchema.index({created_at:1, username:1});
 let Repo = mongoose.model('Repo', repoSchema);
 
 let save = (repos, callback) => {
-  /************************************************
-      CONSIDER callback function as 2nd argument of save
-              and invoke callback on error/success 
-  ************************************************/
-
   // TODO: Your code here
   // This function should save a repo or repos to
   // the MongoDB
   
-  repos.map((repo, ind) => {
+  var promiseAll = Promise.all(
+    repos.map((repo, ind) => {
+      var promise = Repo.findOne({created_at: repo.created_at, username: repo.owner.login, reponame: repo.name})
+                      .then((foundRepo) => {
+                        if(foundRepo) {
+                          return foundRepo.update({forks: repo.forks})
+                        } else {
+                          var repoDoc = new Repo({created_at: repo.created_at, username: repo.owner.login, reponame: repo.name, forks: repo.forks});
+                          return repoDoc.save();
+                        }
+                      })
+                      .catch((err) => callback(err, null));
+      return promise;
+    })
+  );
 
+  promiseAll.then(() => {
+    callback(null, true);
+  });
+    /* Callback Method
     Repo.findOne({created_at: repo.created_at, username: repo.owner.login, reponame: repo.name}, (err, foundRepo) => {
       if (err) {
         callback(err, null);
@@ -41,6 +54,7 @@ let save = (repos, callback) => {
               callback(err, null);
             } else {
               if(ind === repos.length-1) {
+                aggregate([{$sort : { created_at: 1, username: 1 } }]);
                 callback(null, true);
               }
             }
@@ -55,6 +69,7 @@ let save = (repos, callback) => {
               callback(err, null);
             } else {
               if(ind === repos.length-1) {
+                // Repo.aggregate.sort('created_at username');
                 callback(null, true);
               }
             }
@@ -65,9 +80,19 @@ let save = (repos, callback) => {
       }
 
     });
+    */
+}
 
+let getTop25Repo = (callback) => {
+  var top = [];
+  Repo.find().sort({created_at:1, username:1}).limit(25).exec((err, repos) => {
+    if(err){
+      callback(err, null);
+    } else {
+      callback(null, repos)
+    }
   });
-
 }
 
 module.exports.save = save;
+module.exports.getTop25Repo = getTop25Repo;

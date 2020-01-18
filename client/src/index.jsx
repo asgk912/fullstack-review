@@ -20,7 +20,7 @@ class App extends React.Component {
       method: "POST",
       data: {username: term},
       success: (data) => {
-        console.log(data);
+        this.setState({repos: data});
       },
       error: (data) => {
         console.log(data);

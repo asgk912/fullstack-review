@@ -1,6 +1,7 @@
 const express = require('express');
-var getReposByUsername = require('../helpers/github.js').getReposByUsername;
-var save = require('../database/index.js').save;
+const getReposByUsername = require('../helpers/github.js').getReposByUsername;
+const save = require('../database/index.js').save;
+const getTop25Repo = require('../database/index.js').getTop25Repo;
 
 let app = express();
 
@@ -33,18 +34,32 @@ app.post('/repos', function (req, res) {
           res.sendStatus(500);
         } else {
           if(success) {
-            res.sendStatus(200);
+            getTop25Repo((err, repos) => {
+              if(err){
+                console.log(err);
+                res.sendStatus(404);
+              } else {
+                res.jsonp(repos);
+              }
+            });
           }
         }
       });    
     }
   });
-
 });
 
 app.get('/repos', function (req, res) {
   // TODO - your code here!
   // This route should send back the top 25 repos
+  getTop25Repo((err, repos) => {
+    if(err){
+      console.log(err);
+      res.sendStatus(404);
+    } else {
+      res.jsonp(repo);
+    }
+  });
 });
 
 let port = 1128;
