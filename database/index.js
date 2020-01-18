@@ -17,7 +17,7 @@ repoSchema.index({created_at:1, username:1});
 
 let Repo = mongoose.model('Repo', repoSchema);
 
-let save = (repos) => {
+let save = (repos, callback) => {
   /************************************************
       CONSIDER callback function as 2nd argument of save
               and invoke callback on error/success 
@@ -36,18 +36,18 @@ let save = (repos) => {
         // repo is found, update its forks number
           foundRepo.update({forks: repo.forks}, (err, raw) => {
             if(err) {
-              console.log(err);
+              callback(err, null);
             } else {
-              console.log(raw);
+              callback(null, raw);
             }
           });  
         } else {
           var repoDoc = new Repo({created_at: repo.created_at, username: repo.owner.login, reponame: repo.name, forks: repo.forks});
           repoDoc.save( (err) => {
             if(err){
-              console.log(err);
+              callback(err, null);
             } else {
-              console.log('new repo saved successfully');
+              callback(null, null);
             }
           });
         }
