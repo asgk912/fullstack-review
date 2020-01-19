@@ -9,7 +9,8 @@ let repoSchema = mongoose.Schema({
   created_at: Date,
   username: String,
   reponame: String,
-  forks: Number
+  forks: Number,
+  url: String
 });
 
 repoSchema.index({created_at:1, username:1});
@@ -24,12 +25,12 @@ let save = (repos, callback) => {
   
   var promiseAll = Promise.all(
     repos.map((repo, ind) => {
-      var promise = Repo.findOne({created_at: repo.created_at, username: repo.owner.login, reponame: repo.name})
+      var promise = Repo.findOne({created_at: repo.created_at, username: repo.owner.login, reponame: repo.name, url: repo.html_url})
                       .then((foundRepo) => {
                         if(foundRepo) {
                           return foundRepo.update({forks: repo.forks})
                         } else {
-                          var repoDoc = new Repo({created_at: repo.created_at, username: repo.owner.login, reponame: repo.name, forks: repo.forks});
+                          var repoDoc = new Repo({created_at: repo.created_at, username: repo.owner.login, reponame: repo.name, forks: repo.forks, url: repo.html_url});
                           return repoDoc.save();
                         }
                       })

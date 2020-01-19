@@ -7,7 +7,7 @@ const RepoList = (props) => {
   <div>
     <h4> Repo List Component </h4>
     {message}
-    {props.repos.map((repo, index) => (<div className="repo" key={index.toString()}>Created Date: {repo.created_at.toString().substring(0,10)}, Username: {repo.username}, Reponame: {repo.reponame}, Forks: {repo.forks}</div>))}
+    {props.repos.map((repo, index) => (<div className="repo" key={index.toString()}>Created Date: {repo.created_at.toString().substring(0,10)}, Username: {repo.username}, Reponame: <a href={repo.url} onClick={() => {}}>{repo.reponame}</a>, Forks: {repo.forks}</div>))}
   </div>
   );
 }
