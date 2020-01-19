@@ -57,7 +57,9 @@ app.get('/repos', function (req, res) {
       console.log(err);
       res.sendStatus(404);
     } else {
-      res.jsonp(repo);
+      // console.log(typeof repos);
+      // res.sendStatus(200);
+      res.jsonp(repos);
     }
   });
 });

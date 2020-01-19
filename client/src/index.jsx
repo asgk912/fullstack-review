@@ -13,6 +13,20 @@ class App extends React.Component {
 
   }
 
+  componentDidMount() {
+    $.ajax("http://localhost:1128/repos", {
+      method: "GET",
+      success: (data) => {
+        console.log('Welcome');
+        this.setState({repos: data});
+      },
+      error: (data) => {
+        console.log('Something went Wrong In Loading');
+        console.log(data);
+      }
+    });
+  }
+
   search (term) {
     console.log(`${term} was searched`);
     // TODO
